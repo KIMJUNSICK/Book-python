@@ -65,3 +65,18 @@ def follow():
     user.setdefault("follow", set()).add(user_id_to_follow)
 
     return jsonify(user)
+
+
+@app.route("/unfollow", methods=["POST"])
+def unfollow():
+    payload = request.json
+    user_id = int(payload["id"])
+    user_id_to_follow = int(payload["unfollow"])
+
+    if user_id not in app.users or user_id_to_follow not in app.users:
+        return "User not found", 400
+
+    user = app.users[user_id]
+    user.setdefault("follow", set()).discard(user_id_to_follow)
+
+    return jsonify(user)
