@@ -17,9 +17,20 @@ app.id_count = 1
 app.json_encoder = CustomJSONEncoder
 
 
-@app.route("/", methods=["GET"])
-def home():
-    return "home"
+@app.route("/timeline/<int:user_id>", methods=["GET"])
+def timeLine(user_id):
+    if user_id not in app.users:
+        return "User not found", 400
+
+    follow_list = app.users[user_id].get("follow", set())
+    follow_list.add(user_id)
+    timeline = [tweet for tweet in app.tweets if tweet['user_id']
+                in follow_list]
+
+    return jsonify({
+        "user_id": user_id,
+        "timeLine": timeline
+    })
 
 
 @app.route("/sign-up", methods=["POST"])
